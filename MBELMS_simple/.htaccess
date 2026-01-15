@@ -1,0 +1,45 @@
+# Prevent directory browsing
+Options -Indexes
+AddDefaultCharset UTF-8
+
+# Protect config and lib folders from direct access (still accessible via include)
+<FilesMatch "^(app\.php|db\.php|bootstrap\.php|helpers\.php|flash\.php|csrf\.php|auth\.php|audit\.php)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Block access to utility/test/debug files
+<FilesMatch "(check_users|test_login|fix_staff_password)\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Deny access to hidden files (like .git, .env)
+<FilesMatch "^\.">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Deny access to backup/sensitive files
+<FilesMatch "\.(bak|old|backup|swp|sql|log|env)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Basic PHP limits (optional)
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
